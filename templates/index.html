@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to the Vest Detection Tool</h1>
+        <div class="tabs">
+            <a href="{{ url_for('upload_image') }}">Detect Vest</a>
+        </div>
+    </div>
+</body>
+</html>
