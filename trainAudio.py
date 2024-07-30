@@ -22,7 +22,7 @@ model.to(device)
 
 # Define training arguments with reduced batch size and gradient accumulation
 training_args = TrainingArguments(
-    output_dir="./results",
+    output_dir="./resultsAudio",
     per_device_train_batch_size=2,  # Reduced batch size
     per_device_eval_batch_size=2,   # Reduced batch size
     eval_strategy="steps",
@@ -47,5 +47,5 @@ trainer = Trainer(
 trainer.train()
 
 # Save the fine-tuned model and processor
-model.save_pretrained("./results")
-processor.save_pretrained("./results")
+model.save_pretrained("./resultsAudio")
+processor.save_pretrained("./resultsAudio")

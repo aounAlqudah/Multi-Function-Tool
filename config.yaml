@@ -5,3 +5,4 @@ val: images/train
 
 names: 
   0: vest
+  1: no-vest
