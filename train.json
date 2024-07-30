@@ -1,0 +1,14 @@
+[
+  {
+    "audio": "test1.wav",
+    "text": "In the construction industry, managing risk is crucial to minimize unexpected outcomes. Every project has an associated cost, which must be meticulously tracked to avoid cost overrun. Delays can occur, impacting the schedule significantly, leading to both time overrun and increased expenses. A project might have started well, but unforeseen challenges can cause delay. While some tasks are marked as finished, others remain in progress. Teams must exercise caution to handle any adverse situation efficiently. Addressing these issues promptly ensures smooth project progression"
+  },
+  {
+    "audio": "test2.wav",
+    "text": "When a project has started, it's essential to anticipate potential risk and delay to maintain progress. The cost of these projects must be controlled to prevent cost overrun and ensure financial stability. As some phases are finished, others are still in progress, requiring careful monitoring. A situation might arise where time overrun becomes inevitable, necessitating swift action and caution. Managing these aspects effectively is key to delivering successful projects within the allocated budget and timeline"
+  },
+  {
+    "audio": "test3.wav",
+    "text": "Effective project management involves tracking the cost meticulously to avoid cost overrun and managing risk to mitigate potential setbacks. Projects that have started need regular updates to monitor their in progress status. Occasionally, unforeseen situations lead to delay, causing a time overrun and potentially affecting the overall timeline. As some tasks are finished, others require continued attention. Exercising caution throughout the process ensures that any issues are promptly addressed, maintaining a smooth workflow"
+  }
+]
