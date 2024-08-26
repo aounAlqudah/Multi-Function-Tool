@@ -1,2 +1,6 @@
 .venv*
 venv
+runs*
+results
+resultsAudio
+uploads
