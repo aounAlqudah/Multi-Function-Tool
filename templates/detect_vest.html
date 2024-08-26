@@ -1,37 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Detect Vest</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        /* Simple loading spinner */
+        .spinner {
+            display: none;
+            margin: 20px auto;
+            width: 40px;
+            height: 40px;
+            border: 5px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 5px solid #3498db;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .container {
+            text-align: center;
+        }
+    </style>
     <script>
         function handleResult(response) {
-            document.getElementById('result').innerHTML = '<img src="/display_image/' + response.result_image + '" /><p>' + response.summary_text + '</p>';
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = ''; // Clear previous results
+            if (response.length) {
+                response.forEach(res => {
+                    if (res.image) {
+                        resultDiv.innerHTML += '<img src="/display_image/' + res.image + '" /><p>' + res.summary_text + '</p>';
+                    } else if (res.result_video) {
+                        resultDiv.innerHTML += '<video controls><source src="/display_video/' + res.result_video + '" type="video/mp4"></video><p>' + res.summary_text + '</p>';
+                    }
+                });
+            }
+            console.log(resultDiv);
+
+            document.querySelector('.spinner').style.display = 'none';
         }
+
 
         async function uploadFile(event) {
             event.preventDefault();
             const formData = new FormData(event.target);
+            document.querySelector('.spinner').style.display = 'block';
 
-            const response = await fetch(event.target.action, {
-                method: 'POST',
-                body: formData
-            });
+            try {
+                const response = await fetch(event.target.action, {
+                    method: 'POST',
+                    body: formData
+                });
 
-            const result = await response.json();
-            handleResult(result);
+                if (response.ok) {
+                    const result = await response.json();
+                    handleResult(result);
+                } else {
+                    document.getElementById('result').innerHTML = '<p>Failed to upload. Please try again.</p>';
+                }
+            } catch (error) {
+                document.getElementById('result').innerHTML = `<p> ${error}</p>`;
+            }
+            document.querySelector('.spinner').style.display = 'none';
         }
     </script>
 </head>
+
 <body>
     <div class="container">
-        <h1>Upload Image to Detect Vest</h1>
-        <form action="{{ url_for('upload_image') }}" method="post" enctype="multipart/form-data" onsubmit="uploadFile(event)">
-            <input type="file" name="file">
+        <h1>Upload Image or Video to Detect Vest</h1>
+        <form action="{{ url_for('upload_image') }}" method="post" enctype="multipart/form-data"
+            onsubmit="uploadFile(event)">
+            <input type="file" name="file" multiple>
             <input type="submit" value="Upload">
         </form>
+        <div class="spinner"></div>
         <div id="result"></div>
         <a href="{{ url_for('index') }}">Back to Home</a>
     </div>
 </body>
+
 </html>

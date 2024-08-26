@@ -4,6 +4,42 @@
     <meta charset="UTF-8">
     <title>Home</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            text-align: center;
+            padding: 50px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .tabs {
+            margin-top: 20px;
+        }
+
+        .tabs a {
+            display: inline-block;
+            padding: 15px 25px;
+            margin: 10px;
+            background-color: #007BFF;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .tabs a:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -11,6 +47,7 @@
         <div class="tabs">
             <a href="{{ url_for('upload_image') }}">Detect Vest</a>
             <a href="{{ url_for('upload_audio') }}">Audio to Text</a>
+            <a href="{{ url_for('upload_video') }}">Video to Text</a>
         </div>
     </div>
 </body>
