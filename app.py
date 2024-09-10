@@ -5,6 +5,8 @@ from ultralytics import YOLO
 from transformers import WhisperProcessor, WhisperForConditionalGeneration
 import torch
 import librosa
+from docx import Document
+from docx.shared import Inches
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads/'
@@ -31,6 +33,24 @@ words_to_highlight = [
     "Risk", "cost", "delay", "started", "finished", "in progress",
     "caution", "situation", "time overrun", "cost overrun"
 ]
+
+def create_word_doc(results):
+    doc = Document()
+    doc.add_heading('Vest Detection Results', 0)
+    
+    for result in results:
+        if 'image' in result:
+            doc.add_picture(result['image'], width=Inches(5))
+            doc.add_paragraph(result['summary_text'])
+        elif 'video' in result:
+            doc.add_paragraph(f"Video detected, but video export is not included.")
+            doc.add_paragraph(result['summary_text'])
+    
+    # Save the document to the result folder
+    word_doc_path = os.path.join(app.config['RESULT_FOLDER'], 'vest_detection_results.docx')
+    doc.save(word_doc_path)
+    return word_doc_path
+
 
 # Highlight specific words in text
 def highlight_words(text, words_to_highlight):
@@ -174,9 +194,9 @@ def upload_image():
                 else:
                     result_image_path, summary_text = detect_vests(filepath)
                     results.append({'image': result_image_path, 'summary_text': summary_text})
-
+        create_word_doc(results)
         return jsonify(results)
-        # return render_template('result.html', results=results, title="Image/Video Results")
+       # return render_template('result.html', results=results, title="Image/Video Results")
     return render_template('detect_vest.html')
 
 @app.route('/upload_audio', methods=['GET', 'POST'])
