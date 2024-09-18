@@ -34,9 +34,9 @@ words_to_highlight = [
     "caution", "situation", "time overrun", "cost overrun"
 ]
 
-def create_word_doc(results):
+def create_word_doc(results, docFile, title):
     doc = Document()
-    doc.add_heading('Vest Detection Results', 0)
+    doc.add_heading(f'{title}', 0)
     
     for result in results:
         if 'image' in result:
@@ -45,12 +45,43 @@ def create_word_doc(results):
         elif 'video' in result:
             doc.add_paragraph(f"Video detected, but video export is not included.")
             doc.add_paragraph(result['summary_text'])
-    
+        elif 'fileName' in result:
+            doc.add_paragraph(result['fileName'])
+            paragraph = doc.add_paragraph()
+            
+            # Initialize text from summary_text
+            text = result['summary_text']
+            
+            # Sort the words by length to prioritize multi-word phrases (e.g., "cost overrun")
+            sorted_words = sorted(words_to_highlight, key=len, reverse=True)
+            
+            # Replace the words/phrases to mark them
+            for word in sorted_words:
+                text = text.replace(word, f"||{word}||")
+
+            # Split the text on the placeholders "||"
+            parts = text.split("||")
+            
+            for part in parts:
+                run = paragraph.add_run(part)
+                if part in words_to_highlight:
+                    run.bold = True
+                    run.underline = True
+
     # Save the document to the result folder
-    word_doc_path = os.path.join(app.config['RESULT_FOLDER'], 'vest_detection_results.docx')
+    word_doc_path = os.path.join(app.config['RESULT_FOLDER'], f'{docFile}.docx')
     doc.save(word_doc_path)
     return word_doc_path
 
+def delete_file(file_path):
+    try:
+        if os.path.exists(file_path):
+            os.remove(file_path)
+            print(f"File {file_path} has been deleted.")
+        else:
+            print(f"File {file_path} does not exist.")
+    except Exception as e:
+        print(f"Error occurred while deleting the file: {e}")
 
 # Highlight specific words in text
 def highlight_words(text, words_to_highlight):
@@ -191,10 +222,12 @@ def upload_image():
                 if file.filename.lower().endswith(('.mp4', '.avi', '.mov', '.mkv')):
                     result_video_path, summary_text = process_video(filepath)
                     results.append({'video': result_video_path, 'summary_text': summary_text})
+                    delete_file(filepath)
                 else:
                     result_image_path, summary_text = detect_vests(filepath)
                     results.append({'image': result_image_path, 'summary_text': summary_text})
-        create_word_doc(results)
+                    delete_file(filepath)
+        create_word_doc(results,'vest_detection_results','Vest Detection Results')
         return jsonify(results)
        # return render_template('result.html', results=results, title="Image/Video Results")
     return render_template('detect_vest.html')
@@ -204,28 +237,41 @@ def upload_audio():
     if request.method == 'POST':
         files = request.files.getlist('file')
         audio_results = []
+        origenText = []
         for file in files:
             if file:
                 filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
                 file.save(filepath)
                 text = transcribe_audio(filepath)
+                origenText.append({'fileName': file.filename, 'summary_text': text})
                 highlighted_text = highlight_words(text, words_to_highlight)
-                audio_results.append(highlighted_text)
-        return render_template('result.html', results=audio_results, title="Audio to Text Results")
+                audio_results.append({'fileName': file.filename, 'summary_text': highlighted_text})
+                create_word_doc(origenText,'audio_detection_results','Audio Detection Results')
+                delete_file(filepath)
+                
+
+        return render_template('audio_results.html', results=audio_results, title="Audio to Text Results")
     return render_template('audio_to_text.html')
 
 @app.route('/upload_video', methods=['GET', 'POST'])
 def upload_video():
     if request.method == 'POST':
         file = request.files['file']
+        video_results = []
+        origenText = []
         if file:
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
             file.save(filepath)
             # Reuse the transcribe_audio function to extract and transcribe audio from video
             audio_path = extract_audio_from_video(filepath)
             text = transcribe_audio(audio_path)
+            origenText.append({'fileName': file.filename, 'summary_text': text})
             highlighted_text = highlight_words(text, words_to_highlight)
-            return render_template('result.html', results=[highlighted_text], title="Video to Text Results")
+            video_results.append({'fileName': file.filename, 'summary_text': highlighted_text})
+            create_word_doc(origenText,'video_detection_results','Video Detection Results')
+            delete_file(filepath)
+            delete_file(audio_path)
+            return render_template('audio_results.html', results=video_results, title="Video to Text Results")
     return render_template('video_to_text.html')
 
 @app.route('/display_image/<path:image_path>')

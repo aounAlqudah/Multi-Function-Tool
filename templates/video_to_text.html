@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Audio to Text</title>
+    <title>Video to Text</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <div class="container">
-        <h1>Upload Audio File</h1>
-        <form action="{{ url_for('upload_audio') }}" method="post" enctype="multipart/form-data">
-            <input type="file" name="file" multiple>
+        <h1>Upload Video File</h1>
+        <form action="{{ url_for('upload_video') }}" method="post" enctype="multipart/form-data">
+            <input type="file" name="file">
             <input type="submit" value="Upload">
         </form>
         <a href="{{ url_for('index') }}">Back to Home</a>

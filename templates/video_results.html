@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Video Results</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <h1>Video Processing Results</h1>
+  {% for result in results %}
+    <p>{{ result['fileName']|safe }}</p>
+    <p>{{ result['summary_text']|safe }}</p>
+  {% endfor %}
+</body>
+</html>

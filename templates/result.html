@@ -1,19 +1,15 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>{{ title }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <meta charset="utf-8">
+  <title>Results</title>
 </head>
 <body>
-    <div class="container">
-        <h1>{{ title }}</h1>
-        <div class="results">
-            {% for result in results %}
-                <p>{{ result|safe }}</p>
-            {% endfor %}
-        </div>
-        <a href="{{ url_for('index') }}">Back to Home</a>
-    </div>
+  <h1>Detection Results</h1>
+  {% for result in results %}
+    
+    <p>{{ result['image'] }}</p>
+    <p>{{ result['summary_text'] }}</p>
+  {% endfor %}
 </body>
 </html>
