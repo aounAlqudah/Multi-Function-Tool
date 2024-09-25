@@ -7,6 +7,7 @@ import torch
 import librosa
 from docx import Document
 from docx.shared import Inches
+from moviepy.editor import VideoFileClip
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads/'
@@ -201,9 +202,24 @@ def process_video(video_path):
 
 # Function to extract audio from video
 def extract_audio_from_video(video_path):
-    audio_path = os.path.join(app.config['UPLOAD_FOLDER'], 'audio_' + os.path.basename(video_path) + '.wav')
-    command = f"ffmpeg -i {video_path} -q:a 0 -map a {audio_path}"
-    os.system(command)
+    # Ensure the file exists
+    if not os.path.exists(video_path):
+        print(f"Error: The file {video_path} does not exist.")
+        return None
+
+    # Use os.path.join to construct the audio path
+    audio_filename = 'audio_' + os.path.splitext(os.path.basename(video_path))[0] + '.wav'
+    audio_path = os.path.join(app.config['UPLOAD_FOLDER'], audio_filename)
+
+    try:
+        # Extract audio using moviepy
+        video = VideoFileClip(video_path)
+        video.audio.write_audiofile(audio_path)
+        print(f"Audio successfully extracted to: {audio_path}")
+    except Exception as e:
+        print(f"Error extracting audio from video: {e}")
+        return None
+
     return audio_path
 
 @app.route('/')
